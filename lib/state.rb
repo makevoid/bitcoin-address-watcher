@@ -7,6 +7,7 @@ DB = {
     "unconfirmed", # seen, unconfirmed
     "confirmed"
   ],
+  transactions: [],
   addresses: [
     {
       idx: 0,

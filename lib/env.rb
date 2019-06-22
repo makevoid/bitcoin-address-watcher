@@ -1,10 +1,12 @@
 require 'net/http'
+require 'json'
 require 'bundler'
 Bundler.require :default
 
-require_relative 'env_secrets'
-require_relative 'bi/blockchain_info'
-require_relative 'push/push_lib'
-require_relative 'push/push'
+API_HOST = "https://blockchain.info"
 
-BI = BlockchainInfo.new
+require_relative 'monkeypatches/hash'
+require_relative 'env_secrets'
+require_relative 'push/push'
+require_relative 'api/get'
+require_relative 'blockchain/utxo'

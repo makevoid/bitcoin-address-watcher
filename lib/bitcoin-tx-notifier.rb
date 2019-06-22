@@ -25,32 +25,55 @@ def count_update
   DB[:count] = DB[:count] + 1
 end
 
+def transaction_exists?(transaction)
+  DB[:transactions].find do |tx|
+    id = tx.f :id
+    transaction.f :id == id
+  end
+end
+
 def append_transaction(tx)
-  DB[:transactions].push(tx)
+  DB[:transactions] << tx
 end
 
 def get_transactions(address:)
-  BI.transactions address: address
+  UTXO.get address: address
 end
 
 def notify_on_new_transactions!(address:)
   transactions = get_transactions address: address
 
-  raise transaction.inspect
+  p transactions
 
-  append_transaction(transaction)
+  tx = transactions.first
 
-  raise transaction.inspect
-  transaction_id = transaction
+  # 3BLtCbn2LwVcLYCf2fU2oNRPnodgBMr5PH
+  # 8e174f694402ee6fcce703ab926a56c4de152de8925cc4b77f1e821762b0a4ea
 
+  puts "Transction:"
+  p tx.inspect
+  puts
 
-  notify! transaction if count_update
+  transaction = {
+    idx:   0,
+    id:    tx.f("tx_hash"),
+    value: tx.f("value"),
+    conf:  tx.f("confirmations"),
+  }
+
+  unless transaction_exists? transaction
+    append_transaction transaction
+
+    # raise DB[:transactions].inspect
+    transaction_id = transaction
+
+    notify! transaction
+  end
 end
 
 ADDRS = [
   "39koh3e6NsesfUxgXvwX1AuLegr93ZQBnj",
 ]
-
 
 loop do
   count_init
@@ -61,5 +84,6 @@ loop do
     notify_on_new_transactions! address: address
   end
 
-  sleep 60
+  sleep 3
+  # sleep 60
 end

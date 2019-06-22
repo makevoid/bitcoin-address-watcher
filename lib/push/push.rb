@@ -1,3 +1,5 @@
+require_relative 'push_lib'
+
 class Push
 
   extend PushLib

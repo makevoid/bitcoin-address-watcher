@@ -17,6 +17,7 @@ module PushLib
     res.use_ssl = true
     res.verify_mode = OpenSSL::SSL::VERIFY_PEER
     res = res.start { |http| http.request req }
+    p res
     raise "Request failed ... aborting" unless res.class == Net::HTTPOK
     true
   end

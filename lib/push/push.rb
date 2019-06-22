@@ -5,7 +5,12 @@ class Push
   extend PushLib
 
   def self.p(message)
-    push!(message)
+    PUSH.notify message, title: "BTC"
   end
+
+  # old - pushover impl.
+  # def self.p(message)
+  #   push!(message)
+  # end
 
 end

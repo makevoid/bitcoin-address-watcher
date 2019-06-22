@@ -11,10 +11,15 @@ at_exit do
   # push_notification "exit"
 end
 
-def notify!(level)
+def notify!(tx)
   puts "TX Received! (push notif.)"
-  push_notification "0 confs - 3antani - BTC TX #1 Received  - tx: 0x123456"
-  # push_notification "1 confs - 3antani - BTC TX #1 Confirmed - tx: 0x123456"
+  conf = tx.f :conf
+  tx_id = tx.f :tx_id_short
+  if conf == 0
+    push_notification "0 confs - 3antani - BTC TX #1 Received  - value: #{} - tx: #{tx_id}"
+  else
+    push_notification "#{conf} confs - 3antani - BTC TX #1 Confirmed - tx: #{tx_id}"
+  end
 end
 
 def count_init
@@ -28,7 +33,7 @@ end
 def transaction_exists?(transaction)
   DB[:transactions].find do |tx|
     id = tx.f :id
-    transaction.f :id == id
+    transaction.f(:id) == id
   end
 end
 
@@ -40,34 +45,45 @@ def get_transactions(address:)
   UTXO.get address: address
 end
 
+def conf_num_changed?(tx_old:, tx_new:)
+
+end
+
 def notify_on_new_transactions!(address:)
   transactions = get_transactions address: address
 
-  p transactions
-
   tx = transactions.first
-
-  # 3BLtCbn2LwVcLYCf2fU2oNRPnodgBMr5PH
-  # 8e174f694402ee6fcce703ab926a56c4de152de8925cc4b77f1e821762b0a4ea
 
   puts "Transction:"
   p tx.inspect
   puts
 
+  tx_hash = tx.f "tx_hash"
+  value   = tx.f "value"
+  value_bits = (value.to_f / 100).floor
+
   transaction = {
     idx:   0,
-    id:    tx.f("tx_hash"),
-    value: tx.f("value"),
+    id:    tx_hash,
+    value: value,
     conf:  tx.f("confirmations"),
+    addr:  address,
+    value_bits: value_bits,
+    tx_id_short: tx_hash[0..6],
+    last_checked_at: Time.now,
   }
 
-  unless transaction_exists? transaction
+  unless old_tx = transaction_exists? transaction
     append_transaction transaction
 
-    # raise DB[:transactions].inspect
-    transaction_id = transaction
+    # # raise DB[:transactions].inspect
+    # transaction_id = transaction
 
     notify! transaction
+  else
+    if conf_num_changed? tx: transaction, tx_old: old_tx
+      notify! transaction
+    end
   end
 end
 

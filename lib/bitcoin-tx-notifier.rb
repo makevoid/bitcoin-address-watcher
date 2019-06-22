@@ -1,32 +1,10 @@
 require_relative 'env'
 
-exit
+require_relative 'state'
 
-DB = {
-  count: nil,
-  statuses: [
-    "unseen",
-    "unconfirmed", # seen, unconfirmed
-    "confirmed"
-  ],
-  transactions: [
-    {
-      id: 0,
-      block_seen: 123123,
-      block_conf: nil,
-      timestamp: 123123123,
-      timestamp_conf: nil,
-      confirmations: 0,
-    }, {
-      id: 1,
-      block_seen:          123123,
-      block_conf:          133333,
-      timestamp:        123123123,
-      timestamp_conf:   133333333,
-      confirmations:            2,
-    }
-  ]
-}
+def push_notification(message)
+  Push.p message
+end
 
 at_exit do
   puts "EXIT!"
@@ -34,52 +12,54 @@ at_exit do
 end
 
 def notify!(level)
-  puts "Level up! (push notif.)"
-  push_notification "Level UP! level: #{level}"
+  puts "TX Received! (push notif.)"
+  push_notification "0 confs - 3antani - BTC TX #1 Received  - tx: 0x123456"
+  # push_notification "1 confs - 3antani - BTC TX #1 Confirmed - tx: 0x123456"
 end
 
-def count_init(new_count)
+def count_init
   DB[:count] = 0
 end
 
-def count_update(new_count)
-  DB[:count] = new_count + 1
+def count_update
+  DB[:count] = DB[:count] + 1
 end
 
 def append_transaction(tx)
-
+  DB[:transactions].push(tx)
 end
 
-class BlockchainInfo
-  def initialize( address: )
-    @address = address
-  end
-
-  def transactions
-    @address
-    
-  end
+def get_transactions(address:)
+  BI.transactions address: address
 end
 
-def get_transactions(address)
-  # BC = BitcoinCore.new
-  BI = BlockchainInfo.new address: address
-  BI.transactions
+def notify_on_new_transactions!(address:)
+  transactions = get_transactions address: address
+
+  raise transaction.inspect
+
+  append_transaction(transaction)
+
+  raise transaction.inspect
+  transaction_id = transaction
+
+
+  notify! transaction if count_update
 end
+
+ADDRS = [
+  "39koh3e6NsesfUxgXvwX1AuLegr93ZQBnj",
+]
+
 
 loop do
   count_init
   send_notification = true
   # send_notification = false
 
-  get_transaction()
-
-  append_transaction(transaction)
-
-  transaction_id =
-
-
-  notify! transaction if count_update
+  ADDRS.each do  |address|
+    notify_on_new_transactions! address: address
+  end
 
   sleep 60
 end

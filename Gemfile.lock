@@ -1,13 +1,13 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    blockchain-info-ruby (1.2.1)
+    blockchain (3.0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  blockchain-info-ruby
+  blockchain
 
 BUNDLED WITH
    2.0.2

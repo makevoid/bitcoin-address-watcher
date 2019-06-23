@@ -1,6 +1,6 @@
-# bitcoin-tx-notifier
+# bitcoin-address-watcher
 
-Bitcoin transaction notifier - on 0 and on 1 confirmations, queries blockcypher api periodically - supports notification via Pushover 
+Bitcoin address watcher // transaction notifier - on 0 and on 1 confirmations, queries the blockchain via the blockcypher api, sends you a push notification when detects a transaction - supports push notification via Pushover 
 
 
 ### Prereqs

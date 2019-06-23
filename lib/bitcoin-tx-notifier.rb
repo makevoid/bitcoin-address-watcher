@@ -65,8 +65,10 @@ def get_address(address)
 end
 
 def stats_diff?(stats:, stats_prev:)
+  return unless stats[:balance]
+  return unless stats_prev[:balance]
   # return false if DB.f(:stats)[:empty]
-  stats.f(:balance) > stats_prev.f(:stats_prev) ||
+  stats.f(:balance) > stats_prev.f(:balance) ||
     stats.f(:unconfirmed_balance) > stats_prev.f(:unconfirmed_balance)
 end
 

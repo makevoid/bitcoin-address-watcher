@@ -28,6 +28,7 @@ def addresses_constant
 end
 
 ADDRS = addresses_constant || [
-  "39koh3e6NsesfUxgXvwX1AuLegr93ZQBnj",
+  "3N3RXbpGHn6bfvcE2nEYbvGHVPorVWgkeQ",
+  # "39koh3e6NsesfUxgXvwX1AuLegr93ZQBnj",
   # "3BLtCbn2LwVcLYCf2fU2oNRPnodgBMr5PH",
 ]

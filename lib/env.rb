@@ -29,8 +29,8 @@ def addresses_constant
   ENV["ADDRESSES"] && ENV["ADDRESSES"].split(",").map(&:strip)
 end
 
-ADDRS = addresses_constant || [
-  "3N3RXbpGHn6bfvcE2nEYbvGHVPorVWgkeQ",
-  # "39koh3e6NsesfUxgXvwX1AuLegr93ZQBnj",
-  # "3BLtCbn2LwVcLYCf2fU2oNRPnodgBMr5PH",
+DEFAULT_ADDRESSES = [
+  # hardcode your default addresses here if you don't like env vars 
 ]
+
+ADDRS = addresses_constant || DEFAULT_ADDRESSES

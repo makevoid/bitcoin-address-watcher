@@ -5,14 +5,14 @@ Bitcoin transaction notifier - on 0 and on 1 confirmations, queries blockcypher 
 
 ### Prereqs
 
-- Ruby
+- Ruby or Docker
 
 
 ### Config
 
 The defult env file needs to be copied (`cp lib/env_secrets.default.rb lib/env_secrets.rb`) and configured with your pushover secrets
 
-### Run
+### Run (Ruby)
 
     rake ADDRESS=3N3RXbpGHn6bfvcE2nEYbvGHVPorVWgkeQ
 

@@ -29,6 +29,7 @@ Whenever that address will receive a payment, you'll get notified!
 
 GPLV3
 
+---
 
 Enjoy, 
 

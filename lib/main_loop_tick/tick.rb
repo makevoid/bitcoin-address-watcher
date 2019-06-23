@@ -1,7 +1,7 @@
 class MainLoopTick
   TICK = {
     # time: 60,
-    time: 30,
+    time: 19,
     tick: MainLoopTick.new,
   }
 

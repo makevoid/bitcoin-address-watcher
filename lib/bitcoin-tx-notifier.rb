@@ -48,13 +48,13 @@ def stats_prev_get
   DB[:stats]
 end
 
-def stats_update(stats)
+def stats_save(stats)
   DB[:stats] = stats
 end
 
 def get_address(address)
   addr = Address.get address
-  p addr
+  # p addr
   {
     address:            address,
     balance:            addr.f("balance"),
@@ -67,9 +67,9 @@ end
 def stats_diff?(stats:, stats_prev:)
   return unless stats[:balance]
   return unless stats_prev[:balance]
-  # return false if DB.f(:stats)[:empty]
+  return false if DB.f(:stats)[:empty]
   stats.f(:balance) > stats_prev.f(:balance) ||
-    stats.f(:unconfirmed_balance) > stats_prev.f(:unconfirmed_balance)
+    stats.f(:balance_zeroconf) > stats_prev.f(:balance_zeroconf)
 end
 
 def notify_on_balance_update!(address:)
@@ -79,14 +79,17 @@ def notify_on_balance_update!(address:)
   sleep 0.5 # to slow down requests when getting a big number of addresses
 
   puts "Stats:"
-  p stats.inspect
+  p stats
   puts
+  # p stats_prev
+  # puts
   # stats = { balance: ... , antani: ... }
 
-  if stats_diff? stats: stats, stats_prev: stats_prev
+  stats_save stats
 
+  if stats_diff? stats: stats, stats_prev: stats_prev
+  # if true
     puts "Trigger"
-    stats_update stats
     notify! stats
 
   end

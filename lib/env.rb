@@ -14,6 +14,8 @@ require_relative 'api/get'
 # require_relative 'blockchain/tx'    # for accessing each tx data
 require_relative 'blockchain/address' # just total balances
 require_relative 'push/notifications'
+
+TICK_TIME_DEFAULT = 19
 require_relative 'main_loop_tick/tick'
 
 client = Rushover::Client.new PUSHOVER_API_TOKEN

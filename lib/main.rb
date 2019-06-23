@@ -2,6 +2,7 @@
 class Main
 
   def self.run!
+    puts "Main loop started - Watching addresses: #{ADDRS.join ", "}\n\n"
     # bootstrap
     define_at_exit_hook!
 

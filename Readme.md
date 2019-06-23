@@ -19,6 +19,19 @@ The defult env file needs to be copied (`cp lib/env_secrets.default.rb lib/env_s
 
 ### Run on docker compose
 
-    Configure the address thay you want to watch 
+Configure the address thay you want to watch in the [docker-compose] yml file. 
 
-    https://github.com/makevoid/bitcoin-tx-notifier/blob/master/docker-compose.yml#L11
+Run `docker-compose up`.
+
+Whenever that address will receive a payment, you'll get notified!
+
+### License
+
+GPLV3
+
+
+Enjoy, 
+
+@makevoid
+
+[docker-compose]: https://github.com/makevoid/bitcoin-tx-notifier/blob/master/docker-compose.yml#L11

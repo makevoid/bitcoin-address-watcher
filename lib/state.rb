@@ -5,7 +5,9 @@ DB = {
   first_run: true,
   balance: 0,
   unconfirmed_balance: 0,
-  transactions: [],
+  stats: {
+    empty: true,
+  },
   # statuses: [
   #   "unseen",
   #   "unconfirmed", # seen, unconfirmed

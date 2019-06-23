@@ -11,16 +11,29 @@ end
 
 include PushNotifications
 
-def notify!(tx)
-  puts "TX Received! (push notif.)"
-  conf    = tx.f :conf
-  tx_id   = tx.f :tx_id_short
-  address = tx.f :addr
-  if conf == 0
-    push_notification "0 confs - #{address} - BTC TX #1 Received  - value: #{} - tx: #{tx_id}"
-  else
-    push_notification "#{conf} confs - #{address} - BTC TX #1 Confirmed - tx: #{tx_id}"
-  end
+MESSAGES = {
+  tx: "
+    You have a new transaction!
+  ".strip,
+  conf: "
+    That transaction confirmed! You can spend the BTCs!
+  ".strip,
+
+}
+
+def notify!(stats, message: MESSAGES.f(:tx))
+  puts "(push notif.)"
+
+  address           = stats.f :address
+  balance           = stats.f :balance
+  balance_zeroconf  = stats.f :balance_zeroconf
+  tx_count          = stats.f :tx_count
+  tx_zeroconf_count = stats.f :tx_zeroconf_count
+
+
+  balances  = "bal: #{balance} / 0conf-bal: #{balance_zeroconf}"
+  tx_counts = "txs: #{tx_count} / 0conf-txs: #{tx_zeroconf_count}"
+  push_notification "#{message} - #{address} - #{balances} - #{tx_counts}"
 end
 
 def count_init!
@@ -31,21 +44,19 @@ def count_update
   DB[:count] = DB[:count] + 1
 end
 
-def transaction_exists?(transaction)
-  DB[:transactions].find do |tx|
-    id = tx.f :id
-    transaction.f(:id) == id
-  end
+def stats_prev_get
+  DB[:stats]
 end
 
-def append_transaction(tx)
-  DB[:transactions] << tx
+def stats_update(stats)
+  DB[:stats] = stats
 end
 
 def get_address(address)
   addr = Address.get address
-
+  p addr
   {
+    address:            address,
     balance:            addr.f("balance"),
     balance_zeroconf:   addr.f("unconfirmed_balance"),
     tx_count:           addr.f("final_n_tx"),
@@ -53,97 +64,34 @@ def get_address(address)
   }
 end
 
-def get_transactions(address:)
-  tx = TX.get address: address
-
-  txs = tx.f "txrefs"
-  txs.each{ |tx| tx["is_confirmed"] = true }
-  zeroconf_txs = tx["unconfirmed_txrefs"] || []
-  zeroconf_txs.each{ |tx| tx["is_confirmed"] = false }
-
-  transactions = txs + zeroconf_txs
-  tx_info = {
-    balance:          tx.f("balance"),
-    balance_zeroconf: tx.f("unconfirmed_balance"),
-  }
-
-  {
-    transactions: transactions,
-    meta: tx_info,
-  }
-end
-
-def conf_num_changed?(tx:, tx_old:)
-  conf_old = tx_old.f :conf
-  conf_new = tx.f :conf
-  conf_new > conf_old && conf_new < 2
-end
-
-def build_transaction(tx:, address:, tx_info:)
-  tx_hash = tx.f "tx_hash"
-  value   = tx.f "value"
-  value_bits = (value.to_f / 100).floor
-  meta = {
-    value_bits:       value_bits,
-    tx_id_short:      tx_hash[0..6],
-    last_checked_at:  Time.now,
-    confirmed_at:     tx["confirmed"],
-    confirmed:        tx.f("is_confirmed"),
-    addr_balance:     tx_info.f(:balance),
-    addr_balance_zeroconf: tx_info.f(:balance_zeroconf),
-  }
-
-  {
-    idx:   0,
-    id:    tx_hash,
-    value: value,
-    conf:  tx.f("confirmations"),
-    addr:  address,
-    meta:  meta,
-  }
+def stats_diff?(stats:, stats_prev:)
+  # return false if DB.f(:stats)[:empty]
+  stats.f(:balance) > stats_prev.f(:stats_prev) ||
+    stats.f(:unconfirmed_balance) > stats_prev.f(:unconfirmed_balance)
 end
 
 def notify_on_balance_update!(address:)
+  stats_prev = stats_prev_get
 
-end
+  stats = get_address address
+  sleep 0.5 # to slow down requests when getting a big number of addresses
 
-def notify_on_new_transactions!(address:)
-  transactions = get_transactions address: address
+  puts "Stats:"
+  p stats.inspect
+  puts
+  # stats = { balance: ... , antani: ... }
 
-  addr_details = transactions.f :meta
-  tx_info = {
-    balance:          addr_details.f(:balance),
-    balance_zeroconf: addr_details.f(:balance_zeroconf),
-  }
-  transactions = transactions.f :transactions
+  if stats_diff? stats: stats, stats_prev: stats_prev
 
+    puts "Trigger"
+    stats_update stats
+    notify! stats
 
-  puts "Transactions:"
-  p transactions
-
-  transactions.each do |tx|
-
-    # tx = transactions.first
-
-    transaction = build_transaction tx: tx, address: address, tx_info: tx_info
-
-    puts "Transction:"
-    p transaction.inspect
-    puts
-
-    append_transaction transaction
-
-    unless old_tx = transaction_exists?(transaction)
-      notify! transaction
-    else
-      if conf_num_changed? tx: transaction, tx_old: old_tx
-        notify! transaction
-      end
-    end
   end
 
   puts "---\n\n"
 end
+
 
 require_relative 'main'
 

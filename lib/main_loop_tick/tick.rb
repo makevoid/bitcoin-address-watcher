@@ -1,7 +1,7 @@
 class MainLoopTick
   TICK = {
-    time: 60,
-    time: 5,
+    # time: 60,
+    time: 30,
     tick: MainLoopTick.new,
   }
 
@@ -9,7 +9,7 @@ class MainLoopTick
     TICK.f :tick
   end
 
-  def tick!
+  def end_tick!
     time = TICK.f :time
     sleep time # temporary implementation # I need another thread (or fiber #optimization) for this
   end

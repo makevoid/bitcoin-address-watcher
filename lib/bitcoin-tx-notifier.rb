@@ -31,8 +31,8 @@ def notify!(stats, message: MESSAGES.f(:tx))
   tx_zeroconf_count = stats.f :tx_zeroconf_count
 
 
-  balances  = "bal: #{balance} / 0conf-bal: #{balance_zeroconf}"
-  tx_counts = "txs: #{tx_count} / 0conf-txs: #{tx_zeroconf_count}"
+  balances  = "bal: #{balance} / zeroconf-bal: #{balance_zeroconf}"
+  tx_counts = "txs: #{tx_count} / zeroconf-txs: #{tx_zeroconf_count}"
   push_notification "#{message} - #{address} - #{balances} - #{tx_counts}"
 end
 

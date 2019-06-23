@@ -1,0 +1,9 @@
+version: "3.6"
+
+services:
+  txnotifier:
+    image: makevoid/bitcoin-tx-notifier
+    ports:
+      - 80:80
+    build:
+      context: .
